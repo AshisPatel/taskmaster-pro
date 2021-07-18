@@ -13,6 +13,7 @@ var createTask = function(taskText, taskDate, taskList) {
   // append span and p element to parent li
   taskLi.append(taskSpan, taskP);
 
+  auditTask(taskLi); 
 
   // append to ul list on the page
   $("#list-" + taskList).append(taskLi);
@@ -100,6 +101,16 @@ $(".list-group").on("click", "span", function() {
   .addClass("form-control")
   .val(date); 
 
+  // Enable jquery ui datepicker
+  dateInput.datepicker({
+    minDate: 1,
+    //to span if no date is selected
+    onClose: function() {
+      $(this).trigger("change"); 
+    }
+    
+  }); 
+
   // Replace span with the textarea
   $(this).replaceWith(dateInput); 
 
@@ -108,7 +119,7 @@ $(".list-group").on("click", "span", function() {
 });
 
 // After date input is unselected, convert back to span 
-$(".list-group").on("blur", "input", function(){
+$(".list-group").on("change", "input", function(){
   // Get current text
   var date = $(this)
   .val()
@@ -131,6 +142,8 @@ $(".list-group").on("blur", "input", function(){
   .text(date); 
   // Replace input with span element
   $(this).replaceWith(taskSpan); 
+  // Audit new date to
+  auditTask($(taskSpan).closest(".list-group-item")); 
 });
 
 // modal was triggered
@@ -233,6 +246,32 @@ $("#trash").droppable({
     console.log("out"); 
   }
 })
+
+// Add due date picker function using jquery UI for adding and editing task due dates
+
+$("#modalDueDate").datepicker({
+  minDate: 1 
+});
+
+// Create function to change tasks color based on how close they are to the due date 
+const auditTask = function(taskEl) {
+  // Get date from the task 
+  var date = $(taskEl).find("span").text().trim();
+  console.log(date);
+  // Convert date to moment object
+  var time = moment(date, "L").set("hour", 17); 
+  console.log(time); 
+  // Remove old audit classes 
+  $(taskEl).removeClass("list-group-item-warning list-group-item-danger"); 
+  // Check to see if it task date is past current date 
+  if (moment().isAfter(time)) {
+    $(taskEl).addClass("list-group-item-danger"); 
+  }
+  // Check to see if task due date is within two days of current date
+  else if (Math.abs(moment().diff(time, "days")) <= 2) {
+    $(taskEl).addClass("list-group-item-warning"); 
+  }
+}; 
 
 // remove all tasks
 $("#remove-tasks").on("click", function() {
