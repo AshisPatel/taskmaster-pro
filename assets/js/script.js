@@ -167,6 +167,57 @@ $("#task-form-modal .btn-primary").click(function() {
   }
 });
 
+// Add ability to drag tasks to other task lists and re-order tasks within their own list
+$(".card .list-group").sortable({
+  connectWith: $(".card .list-group"), 
+  scroll: false,
+  tolerance: "pointer",
+  helper: "clone",
+  activate: function(event) {
+    console.log("activate",this);
+  },
+  deactivate: function(event) {
+    console.log("decativate", this)
+  },
+  over: function(event) {
+    console.log("over", event.target)
+  },
+  out: function(event) {
+    console.log("out", event.target)
+  },
+  update: function(event) {
+    // array to store the new order of task data in
+    var tempArr = []; 
+    // loop over current set of children in sortable list
+    // first this is looking at the overall card or list (ul), second this is refrencing the list item (li) in the (ul)
+    $(this).children().each(function() {
+      var text = $(this)
+      .find("p")
+      .text()
+      .trim();
+      
+      var date = $(this)
+      .find("span")
+      .text()
+      .trim(); 
+
+      // add task data to the tempy array as an object
+      tempArr.push({
+        text: text, 
+        date: date
+      }); 
+    });
+     // find the id for the list that is being changed
+     var arrName = $(this)
+     .attr("id")
+     .replace("list-","");
+
+     // update array in the tasks object and save
+     tasks[arrName] = tempArr;
+     saveTasks();
+  }
+});
+
 // remove all tasks
 $("#remove-tasks").on("click", function() {
   for (var key in tasks) {
