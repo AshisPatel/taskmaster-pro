@@ -257,10 +257,8 @@ $("#modalDueDate").datepicker({
 const auditTask = function(taskEl) {
   // Get date from the task 
   var date = $(taskEl).find("span").text().trim();
-  console.log(date);
   // Convert date to moment object
   var time = moment(date, "L").set("hour", 17); 
-  console.log(time); 
   // Remove old audit classes 
   $(taskEl).removeClass("list-group-item-warning list-group-item-danger"); 
   // Check to see if it task date is past current date 
@@ -272,6 +270,13 @@ const auditTask = function(taskEl) {
     $(taskEl).addClass("list-group-item-warning"); 
   }
 }; 
+
+// Timer to check if tasks due dates are coming up while the browser is open
+setInterval(function() {
+  $(".card .list-group-item").each(function(index, el) {
+    auditTask(el);
+  })
+}, 1800000); 
 
 // remove all tasks
 $("#remove-tasks").on("click", function() {
