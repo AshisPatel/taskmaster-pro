@@ -276,7 +276,7 @@ setInterval(function() {
   $(".card .list-group-item").each(function(index, el) {
     auditTask(el);
   })
-}, 1800000); 
+}, (1000*60)*30); // executes every 30 minutes 
 
 // remove all tasks
 $("#remove-tasks").on("click", function() {
